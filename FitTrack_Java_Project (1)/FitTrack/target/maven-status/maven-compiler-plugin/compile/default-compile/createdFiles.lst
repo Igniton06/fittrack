@@ -1,0 +1,5 @@
+com\fittrack\FitnessController.class
+com\fittrack\FitnessController$BmiRequest.class
+com\fittrack\FitnessController$Workout.class
+com\fittrack\FitnessController$BmiResult.class
+com\fittrack\FitTrackApplication.class

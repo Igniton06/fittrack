@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitTrack | Online Fitness Tracker</title>
+<style>
+:root{--bg:#0c1020;--panel:#151b30;--panel2:#1b2340;--text:#f4f6ff;--muted:#a7b0cb;--accent:#9b8cff;--lime:#b8f36b;--border:#2c3554}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0%,#26224c 0,transparent 30%),var(--bg);color:var(--text);font-family:Inter,Segoe UI,Arial,sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;padding:22px max(5%,calc((100% - 1200px)/2));border-bottom:1px solid var(--border);position:sticky;top:0;background:#0c1020eF;backdrop-filter:blur(10px);z-index:5}
+.brand{font-weight:800;font-size:23px;letter-spacing:-.7px}.brand span{color:var(--lime)}.tag{font-size:12px;color:var(--muted);border:1px solid var(--border);border-radius:30px;padding:8px 12px}
+main{max-width:1200px;margin:0 auto;padding:34px 22px 60px}.welcome{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:26px}.eyebrow{color:var(--lime);font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase}.welcome h1{font-size:clamp(30px,5vw,48px);margin:8px 0}.welcome p{margin:0;color:var(--muted)}.date{color:var(--muted);font-size:13px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px}.stat,.panel{background:linear-gradient(145deg,var(--panel),#12182a);border:1px solid var(--border);border-radius:18px;padding:20px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:30px;margin:12px 0 5px}.stat .hint{font-size:12px;color:var(--lime)}
+.layout{display:grid;grid-template-columns:1.3fr .9fr;gap:18px}.panel{margin-bottom:18px}.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.panel h2{font-size:18px;margin:0}.sub{font-size:12px;color:var(--muted)}label{display:block;font-size:12px;color:var(--muted);margin:12px 0 7px}input,select{width:100%;padding:12px 13px;border-radius:10px;border:1px solid var(--border);background:#0d1325;color:var(--text);outline:none}input:focus{border-color:var(--accent)}.formrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}.btn{border:0;border-radius:10px;padding:12px 15px;font-weight:750;cursor:pointer;background:var(--lime);color:#151b22;margin-top:14px}.btn.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}.btn:hover{filter:brightness(1.07)}.full{width:100%}.progress{height:8px;background:#303953;border-radius:10px;overflow:hidden;margin:12px 0}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--lime));border-radius:10px;transition:width .3s}.waterrow{display:flex;align-items:center;justify-content:space-between;gap:12px}.waternum{font-size:29px;font-weight:800}.history{display:grid;gap:9px}.workout{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#10172a;border:1px solid var(--border);padding:12px;border-radius:12px}.workout strong{display:block}.workout small{color:var(--muted)}.delete{border:1px solid #694454;background:#2a1725;color:#ffb4c5;border-radius:8px;padding:7px 9px;cursor:pointer}.empty{color:var(--muted);font-size:13px;padding:12px 0}.bmi-result{margin-top:14px;padding:14px;background:#10172a;border-radius:12px;display:none}.bmi-result strong{font-size:25px}.notice{min-height:18px;color:var(--lime);font-size:12px;margin-top:8px}.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:18px}.disclaimer{font-size:11px;color:var(--muted);line-height:1.5;margin-top:10px}
+@media(max-width:800px){.stats{grid-template-columns:repeat(2,1fr)}.layout{grid-template-columns:1fr}.welcome{align-items:flex-start;flex-direction:column}header{padding:18px 22px}}@media(max-width:420px){.stats{gap:9px}.stat{padding:14px}.stat strong{font-size:25px}.formrow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="brand">fit<span>track</span> ✦</div><div class="tag">YOUR FITNESS SPACE</div></header>
+<main>
+  <section class="welcome"><div><div class="eyebrow">SMALL STEPS. BIG RESULTS.</div><h1>Make today count.</h1><p>Track your movement, build healthy habits, and celebrate progress.</p></div><div class="date" id="today"></div></section>
+  <section class="stats">
+    <div class="stat"><small>Workouts logged</small><strong id="statWorkouts">0</strong><div class="hint">Keep showing up</div></div>
+    <div class="stat"><small>Minutes trained</small><strong id="statMinutes">0</strong><div class="hint">Time invested in you</div></div>
+    <div class="stat"><small>Calories recorded</small><strong id="statCalories">0</strong><div class="hint">Estimated activity burn</div></div>
+    <div class="stat"><small>Water today</small><strong id="statWater">0/8</strong><div class="hint">Hydration check-in</div></div>
+  </section>
+  <div class="layout">
+    <div>
+      <section class="panel">
+        <div class="panel-head"><h2>＋ Log a workout</h2><span class="sub">Add an activity</span></div>
+        <form id="workoutForm">
+          <label for="exercise">Exercise name</label><input id="exercise" placeholder="e.g. Strength training" maxlength="60" required>
+          <div class="formrow"><div><label for="minutes">Duration (minutes)</label><input id="minutes" type="number" min="1" max="600" placeholder="30" required></div><div><label for="calories">Calories (estimate)</label><input id="calories" type="number" min="0" max="10000" placeholder="180" required></div></div>
+          <button class="btn full" type="submit">Save workout ↗</button><div class="notice" id="workoutNotice" aria-live="polite"></div>
+        </form>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>Workout history</h2><span class="sub">Most recent first</span></div>
+        <div id="history" class="history"><div class="empty">No workouts yet. Log your first activity above.</div></div>
+      </section>
+    </div>
+    <div>
+      <section class="panel">
+        <div class="panel-head"><h2>💧 Water tracker</h2><span class="sub">Daily goal: 8 glasses</span></div>
+        <div class="waterrow"><div><div class="waternum"><span id="waterCount">0</span> <span class="sub">/ 8 glasses</span></div><div class="sub">One glass at a time</div></div><div style="font-size:35px">🥤</div></div>
+        <div class="progress"><span id="waterProgress"></span></div>
+        <button class="btn" id="addWater">＋ Add a glass</button> <button class="btn secondary" id="resetWater">Reset</button>
+        <div class="notice" id="waterNotice" aria-live="polite"></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>⚖ BMI calculator</h2><span class="sub">Adult estimate</span></div>
+        <form id="bmiForm"><div class="formrow"><div><label for="height">Height (cm)</label><input id="height" type="number" min="50" max="250" placeholder="170" required></div><div><label for="weight">Weight (kg)</label><input id="weight" type="number" min="10" max="500" step="0.1" placeholder="65" required></div></div><button class="btn full" type="submit">Calculate BMI</button></form>
+        <div id="bmiResult" class="bmi-result"><div class="sub">Your BMI</div><strong id="bmiValue">--</strong><div id="bmiCategory"></div></div>
+        <div class="disclaimer">BMI is a screening measure, not a diagnosis. It does not directly measure body fat or individual health; consult a qualified professional for personal advice.</div>
+        <div class="notice" id="bmiNotice" aria-live="polite"></div>
+      </section>
+    </div>
+  </div>
+  <div class="footer">FitTrack Student Project · Data is held in memory while the Java server runs.</div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+$('today').textContent = new Date().toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+async function api(path, options={}) {
+  const response = await fetch('/api'+path, {headers:{'Content-Type':'application/json'}, ...options});
+  const data = await response.json().catch(()=>({message:'Unexpected server response'}));
+  if(!response.ok) throw new Error(data.message || data.error || 'Something went wrong');
+  return data;
+}
+function setNotice(id,msg){$(id).textContent=msg;setTimeout(()=>{if($(id).textContent===msg)$(id).textContent=''},3500)}
+async function refresh(){
+  try{
+    const [workouts,water,summary]=await Promise.all([api('/workouts'),api('/water'),api('/summary')]);
+    $('statWorkouts').textContent=summary.workouts;$('statMinutes').textContent=summary.minutes;$('statCalories').textContent=summary.calories;$('statWater').textContent=water.glasses+'/8';
+    $('waterCount').textContent=water.glasses;$('waterProgress').style.width=Math.min(100,water.glasses/8*100)+'%';
+    const history=$('history');
+    if(!workouts.length){history.innerHTML='<div class="empty">No workouts yet. Log your first activity above.</div>';}
+    else {history.innerHTML=workouts.map(w=>`<div class="workout"><div><strong>${escapeHtml(w.name)}</strong><small>${w.minutes} min · ${w.calories} kcal · ${w.date}</small></div><button class="delete" data-id="${w.id}" aria-label="Delete ${escapeHtml(w.name)}">Delete</button></div>`).join('');
+      history.querySelectorAll('.delete').forEach(btn=>btn.addEventListener('click',async()=>{try{await api('/workouts/'+btn.dataset.id,{method:'DELETE'});await refresh();}catch(e){setNotice('workoutNotice',e.message)}}));
+    }
+  }catch(e){setNotice('workoutNotice','Could not connect to Java server. Is the app running?')}
+}
+function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+$('workoutForm').addEventListener('submit',async e=>{
+ e.preventDefault();const name=$('exercise').value.trim(),minutes=Number($('minutes').value),calories=Number($('calories').value);
+ try{await api('/workouts',{method:'POST',body:JSON.stringify({name,minutes,calories})});e.target.reset();setNotice('workoutNotice','Workout saved successfully!');await refresh();}
+ catch(err){setNotice('workoutNotice',err.message);}
+});
+$('addWater').addEventListener('click',async()=>{try{const w=await api('/water',{method:'POST'});setNotice('waterNotice',w.glasses>=8?'Daily goal reached — great job!':'Glass added. Keep hydrating!');await refresh()}catch(e){setNotice('waterNotice',e.message)}});
+$('resetWater').addEventListener('click',async()=>{try{await api('/water',{method:'DELETE'});setNotice('waterNotice','Water count reset.');await refresh()}catch(e){setNotice('waterNotice',e.message)}});
+$('bmiForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ try{const result=await api('/bmi',{method:'POST',body:JSON.stringify({heightCm:Number($('height').value),weightKg:Number($('weight').value)})});$('bmiValue').textContent=result.bmi;$('bmiCategory').textContent=result.category;$('bmiResult').style.display='block';setNotice('bmiNotice','BMI calculated by the Java backend.')}
+ catch(err){setNotice('bmiNotice',err.message)}
+});
+refresh();
+</script>
+</body>
+</html>
